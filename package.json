@@ -1,0 +1,40 @@
+{
+  "name": "@dome-protocol/sdk",
+  "version": "0.0.0",
+  "description": "The frontend sdk to operate with dome onchain entities",
+  "module": "dist/index.js",
+  "types": "dist/types/index.d.ts",
+  "type": "module",
+  "files": [
+    "dist",
+    "package.json",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "rimraf ./dist && rollup --config rollup.config.ts --configPlugin typescript",
+    "test": "jest"
+  },
+  "keywords": [
+    "Dome",
+    "SDK",
+    "Miden",
+    "ZK"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.1.4",
+    "@types/jest": "29.5.6",
+    "jest": "^30.1.2",
+    "rimraf": "^6.0.1",
+    "rollup": "^4.50.0",
+    "ts-jest": "^29.4.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2",
+    "viem": "^2.37.1"
+  },
+  "dependencies": {}
+}
