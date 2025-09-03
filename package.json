@@ -2,6 +2,10 @@
   "name": "@dome-protocol/sdk",
   "version": "0.0.0",
   "description": "The frontend sdk to operate with dome onchain entities",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dome-protocol/sdk"
+  },
   "module": "dist/index.js",
   "types": "dist/types/index.d.ts",
   "type": "module",
@@ -12,7 +16,8 @@
   ],
   "scripts": {
     "build": "rimraf ./dist && rollup --config rollup.config.ts --configPlugin typescript",
-    "test": "jest"
+    "test": "jest",
+    "test:types": "tsc --noEmit"
   },
   "keywords": [
     "Dome",
