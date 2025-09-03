@@ -8,23 +8,9 @@ on:
     types: [created]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
-      - run: pnpm i --no-frozen-lockfile
-      - run: pnpm test
-
   publish-npm:
     permissions:
       contents: write
-    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
