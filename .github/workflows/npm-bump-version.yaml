@@ -55,4 +55,4 @@ jobs:
           tag-prefix: "v"
           rc-wording:
           default: prerelease
-          preid: ${{ github.sha }}
+          preid: rc
