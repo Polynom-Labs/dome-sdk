@@ -1,13 +1,13 @@
 import type { DisperseArgs } from "./types";
-import { accountIdHexToFelts, wordHexToFelts } from "../../utils";
+import { accountIdHexToFelts, wordHexToFelts, wordToHex } from "../../utils";
 
 const DEFAULT_TAG = 4177657856n;
 
 type NormalizedArgs = {
   tag: string;
   shares: Array<{
-    recipient: `${string}.${string}.${string}.${string}`;
-    asset: `${string}.0.${string}.${string}`;
+    recipient: `0x${string}`;
+    asset: `0x${string}`;
   }>;
 };
 
@@ -18,10 +18,14 @@ export function generateDisperseScript({
 }: DisperseArgs): string {
   const assetFelts = accountIdHexToFelts(assetAccountId);
   const normalizedShares: NormalizedArgs["shares"] = shares.map((share) => {
-    const recipientFelts = wordHexToFelts(share.recipient).reverse();
     return {
-      recipient: `${recipientFelts[0]}.${recipientFelts[1]}.${recipientFelts[2]}.${recipientFelts[3]}`,
-      asset: `${share.amount.toString(10)}.0.${assetFelts[0]}.${assetFelts[1]}`,
+      recipient: share.recipient as `0x${string}`,
+      asset: wordToHex([
+        share.amount,
+        BigInt(0),
+        assetFelts[0],
+        assetFelts[1],
+      ]) as `0x${string}`,
     };
   });
 

@@ -1,5 +1,5 @@
 import { hexToBytes, isHex } from "viem";
-import { bytesToFelt } from "./felts";
+import { bytesToFelt, feltValueToUint8Array } from "./felts";
 
 export function wordHexToFelts(
   wordHex: string
@@ -25,4 +25,14 @@ export function wordHexToFelts(
   const felt4 = bytesToFelt(felt4Bytes);
 
   return [felt1, felt2, felt3, felt4];
+}
+
+export function wordToHex(word: [bigint, bigint, bigint, bigint]): string {
+  const bytes = Buffer.concat([
+    feltValueToUint8Array(word[0]),
+    feltValueToUint8Array(word[1]),
+    feltValueToUint8Array(word[2]),
+    feltValueToUint8Array(word[3]),
+  ]);
+  return `0x${bytes.toString("hex")}`;
 }
