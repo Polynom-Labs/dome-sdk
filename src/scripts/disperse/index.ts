@@ -7,7 +7,7 @@ type NormalizedArgs = {
   tag: string;
   shares: Array<{
     recipient: `${string}.${string}.${string}.${string}`;
-    asset: `${string}.${string}.0.${string}`;
+    asset: `${string}.0.${string}.${string}`;
   }>;
 };
 
@@ -21,7 +21,7 @@ export function generateDisperseScript({
     const recipientFelts = wordHexToFelts(share.recipient).reverse();
     return {
       recipient: `${recipientFelts[0]}.${recipientFelts[1]}.${recipientFelts[2]}.${recipientFelts[3]}`,
-      asset: `${assetFelts[0]}.${assetFelts[1]}.0.${share.amount.toString(10)}`,
+      asset: `${share.amount.toString(10)}.0.${assetFelts[0]}.${assetFelts[1]}`,
     };
   });
 

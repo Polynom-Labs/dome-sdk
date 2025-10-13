@@ -64,7 +64,7 @@ begin
     push.4177657856
     call.tx::create_note
 
-    push.7190515427852671520.70376226209856768.0.1000000
+    push.1000000.0.7190515427852671520.70376226209856768
     call.basic::move_asset_to_note dropw
     dropw dropw dropw drop
 
@@ -75,7 +75,7 @@ begin
     push.4177657856
     call.tx::create_note
 
-    push.7190515427852671520.70376226209856768.0.2000000
+    push.2000000.0.7190515427852671520.70376226209856768
     call.basic::move_asset_to_note dropw
     dropw dropw dropw drop
 

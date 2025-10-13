@@ -11,7 +11,7 @@ begin
 \tpush.4177657856
 \tcall.tx::create_note
 
-\tpush.7190515427852671520.70376226209856768.0.1000000
+\tpush.1000000.0.7190515427852671520.70376226209856768
 \tcall.basic::move_asset_to_note dropw
 \tdropw dropw dropw drop
 
@@ -22,7 +22,7 @@ begin
 \tpush.4177657856
 \tcall.tx::create_note
 
-\tpush.7190515427852671520.70376226209856768.0.2000000
+\tpush.2000000.0.7190515427852671520.70376226209856768
 \tcall.basic::move_asset_to_note dropw
 \tdropw dropw dropw drop
 
