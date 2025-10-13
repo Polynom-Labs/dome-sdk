@@ -51,7 +51,8 @@ begin
 `;
   });
 
-  script += "end";
+  script += "\tcall.::miden::contracts::auth::basic::auth_tx_rpo_falcon512";
+  script += "\n\nend";
 
   return script;
 }
