@@ -6,7 +6,7 @@ use.miden::contracts::wallets::basic
 begin
 \tpush.6441806357792004242.100894942528834312.6732114268921269897.3258549309132772239
 \tpush.0
-\tpush.0
+\tpush.2
 \tpush.0
 \tpush.4177657856
 \tcall.tx::create_note
@@ -17,7 +17,7 @@ begin
 
 \tpush.10997419871988954563.1915286432582290771.4567187342983042284.11276779465890740934
 \tpush.0
-\tpush.0
+\tpush.2
 \tpush.0
 \tpush.4177657856
 \tcall.tx::create_note

@@ -59,7 +59,7 @@ use.miden::contracts::wallets::basic
 begin
     push.6441806357792004242.100894942528834312.6732114268921269897.3258549309132772239
     push.0
-    push.0
+    push.2
     push.0
     push.4177657856
     call.tx::create_note
@@ -70,7 +70,7 @@ begin
 
     push.10997419871988954563.1915286432582290771.4567187342983042284.11276779465890740934
     push.0
-    push.0
+    push.2
     push.0
     push.4177657856
     call.tx::create_note

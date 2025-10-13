@@ -35,7 +35,7 @@ begin
   normalizedShares.forEach((share) => {
     script += `\tpush.${share.recipient}
 \tpush.0
-\tpush.0
+\tpush.2
 \tpush.0
 \tpush.${tag}
 \tcall.tx::create_note
