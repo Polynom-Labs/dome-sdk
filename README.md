@@ -55,6 +55,7 @@ Output:
 ```masm
 use.miden::tx
 use.miden::contracts::wallets::basic
+use.miden::contracts::auth
 
 begin
     push.0x8f13f40555b1382d890e646242466d5d088b10696a73660192980b94c0e46559
@@ -79,7 +80,7 @@ begin
     call.basic::move_asset_to_note dropw
     dropw dropw dropw drop
 
-    call.::miden::contracts::auth::basic::auth_tx_rpo_falcon512
+    call.auth::basic::auth_tx_rpo_falcon512
 
 end
 ```

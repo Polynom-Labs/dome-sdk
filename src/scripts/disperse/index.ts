@@ -32,6 +32,7 @@ export function generateDisperseScript({
   let script = "";
   script += `use.miden::tx
 use.miden::contracts::wallets::basic
+use.miden::contracts::auth
 
 begin
 `;
@@ -51,7 +52,7 @@ begin
 `;
   });
 
-  script += "\tcall.::miden::contracts::auth::basic::auth_tx_rpo_falcon512";
+  script += "\tcall.auth::basic::auth_tx_rpo_falcon512";
   script += "\n\nend";
 
   return script;
