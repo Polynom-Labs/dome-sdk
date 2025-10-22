@@ -27,8 +27,6 @@ begin
 \tcall.basic::move_asset_to_note dropw
 \tdropw dropw dropw drop
 
-\tcall.auth::basic::auth_tx_rpo_falcon512
-
 end`;
 
 describe("disperse", () => {

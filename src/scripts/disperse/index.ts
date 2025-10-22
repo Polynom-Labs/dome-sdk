@@ -52,8 +52,7 @@ begin
 `;
   });
 
-  script += "\tcall.auth::basic::auth_tx_rpo_falcon512";
-  script += "\n\nend";
+  script += "end";
 
   return script;
 }

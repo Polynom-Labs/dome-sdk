@@ -80,8 +80,6 @@ begin
     call.basic::move_asset_to_note dropw
     dropw dropw dropw drop
 
-    call.auth::basic::auth_tx_rpo_falcon512
-
 end
 ```
 
