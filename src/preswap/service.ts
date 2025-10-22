@@ -25,6 +25,14 @@ export class PreswapService {
     });
   }
 
+  getSupportedChains(): Array<bigint> {
+    return Array.from(
+      new Set(
+        this.providers.flatMap((provider) => provider.getSupportedChainIds())
+      )
+    );
+  }
+
   async getRoutes(
     request: PreswapRouteRequest
   ): Promise<PreswapRouteResponseItem[]> {

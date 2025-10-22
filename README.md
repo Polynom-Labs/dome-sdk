@@ -112,17 +112,21 @@ Use the hook to access configures preswaps
 ```js
 function component() {
   const preswapService = usePreswap();
+  const chainId = useChainId();
   const [quotes, setQuotes] = useState([]);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (preswapService) {
+      if (
+        preswapService &&
+        preswapService.getSupportedChains().includes(chainId)
+      ) {
         preswapService.getRoutes(request).then((routes) => setQuotes(routes));
       }
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [request, preswapService]);
+  }, [request, preswapService, chainId]);
 
   const onBuyClick = useCallback(
     (quote) => {
