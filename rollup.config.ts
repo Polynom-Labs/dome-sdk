@@ -6,7 +6,7 @@ import { defineConfig } from "rollup";
 export default defineConfig([
   {
     output: {
-      file: "dist/index.js",
+      dir: "dist",
       format: "esm",
       sourcemap: true,
     },
