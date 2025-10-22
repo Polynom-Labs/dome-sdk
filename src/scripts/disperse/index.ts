@@ -32,7 +32,6 @@ export function generateDisperseScript({
   let script = "";
   script += `use.miden::tx
 use.miden::contracts::wallets::basic
-use.miden::contracts::auth
 
 begin
 `;
