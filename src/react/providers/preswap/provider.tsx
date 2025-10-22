@@ -1,7 +1,6 @@
 import { FC, PropsWithChildren, useEffect, useMemo } from "react";
-import { PreswapService } from "../../../preswap/service";
 import { PreswapContext } from "./context";
-import { uniswap } from "../../../preswap";
+import { preswap } from "@dome-protocol/sdk";
 
 import { useConfig, useWalletClient } from "wagmi";
 import { getPublicClient } from "wagmi/actions";
@@ -9,7 +8,7 @@ import React from "react";
 
 type UniswapV2PreswapProviderConfig = {
   type: "uniswap-v2";
-} & uniswap.v2.UniV2PreswapProviderOptions;
+} & preswap.uniswap.v2.UniV2PreswapProviderOptions;
 
 type PreswapProviderProps = PropsWithChildren<{
   providers: Record<
@@ -26,7 +25,7 @@ export const PreswapProvider: FC<PropsWithChildren<PreswapProviderProps>> = ({
   const { data: writeClient } = useWalletClient();
 
   const preswapProviders = useMemo(() => {
-    return PreswapService.create(
+    return preswap.PreswapService.create(
       Object.fromEntries(
         Object.entries(providers).map(([chainId, provider]) => {
           const chain = wagmiConfig.chains.find(
@@ -47,7 +46,7 @@ export const PreswapProvider: FC<PropsWithChildren<PreswapProviderProps>> = ({
           if (provider.type === "uniswap-v2") {
             return [
               chainId,
-              new uniswap.v2.UniV2PreswapProvider({
+              new preswap.uniswap.v2.UniV2PreswapProvider({
                 ...provider,
                 readClient,
                 chain,

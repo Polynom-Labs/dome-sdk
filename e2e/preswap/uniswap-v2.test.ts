@@ -70,7 +70,7 @@ describe("UniV2PreswapProvider", () => {
       account: privateKeyToAccount(testUserPrivateKey),
     });
     preswapProvider = new preswap.uniswap.v2.UniV2PreswapProvider({
-      chainId: 11155111,
+      chain: sepolia,
       readClient,
       writeClient,
       swapRouterAddress: SWAP_ROUTER_ADDRESS,
