@@ -14,7 +14,7 @@ export default defineConfig([
     input: "src/index.ts",
     plugins: [
       typescript({
-        declarationDir: "dist/types",
+        declarationDir: "dist",
       }),
       commonjs(),
       resolve({
@@ -33,7 +33,7 @@ export default defineConfig([
     plugins: [
       typescript({
         outDir: "dist/react",
-        declarationDir: "dist/react/types",
+        declarationDir: "dist/react",
         noEmit: true,
       }),
       commonjs(),
