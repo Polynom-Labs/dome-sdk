@@ -82,6 +82,57 @@ begin
 end
 ```
 
+### React integration
+
+#### Preswap provider
+
+Configure your preswap strategies per chain and use the provider to bootstrap the preswap service.
+
+```js
+const preswapConfig = {
+  11155111: {
+    type: "uniswap-v2",
+    txConfirmations: 5,
+    swapRouterAddress: "0xeE567Fe1712Faf6149d80dA1E6934E354124CfE3",
+    slippageTolerance: 70 // 0.7%
+  }
+}
+
+function page() {
+  return (
+    <PreswapProvider providers={preswapConfig}>
+      <App>
+    </PreswapProvider>
+  )
+}
+```
+
+Use the hook to access configures preswaps
+
+```js
+function component() {
+  const preswapService = usePreswap();
+  const [quotes, setQuotes] = useState([]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (preswapService) {
+        preswapService.getRoutes(request).then((routes) => setQuotes(routes));
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [request, preswapService]);
+
+  const onBuyClick = useCallback(
+    (quote) => {
+      preswapService.executeRoute(quote).then(() => console.log("Sucess"));
+    },
+    [preswapService]
+  );
+}
+```
+
 ## Contribution
 
 ### How to release
