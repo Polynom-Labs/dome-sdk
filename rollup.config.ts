@@ -28,7 +28,7 @@ export default defineConfig([
       format: "esm",
       sourcemap: true,
     },
-    external: ["viem", "react", "wagmi"],
+    external: ["viem", "react", "wagmi", "../../../preswap"],
     input: "src/react/index.ts",
     plugins: [
       typescript({

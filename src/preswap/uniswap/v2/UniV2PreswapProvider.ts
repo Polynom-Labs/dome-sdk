@@ -33,7 +33,6 @@ const SWAP_ROUTER_RAW_ABI = parseAbi([
 const SINGLE_HOP_SWAP_GAS_LIMIT = 127_000n;
 
 export interface UniV2PreswapProviderOptions extends PreswapProviderOptions {
-  chainId: number;
   swapRouterAddress: string;
   quoteValidityMs?: number;
   wethAddress?: string;
@@ -50,9 +49,8 @@ export class UniV2PreswapProvider extends PreswapProvider<UniV2PreswapProviderOp
     super(options);
 
     const {
-      chainId,
       quoteValidityMs = 1000 * 60 * 3,
-      wethAddress = WETH9[chainId].address,
+      wethAddress = WETH9[options.chain.id].address,
       swapRouterAddress,
       txConfirmations = 5,
       slippageTolerance = 50,
@@ -70,7 +68,7 @@ export class UniV2PreswapProvider extends PreswapProvider<UniV2PreswapProviderOp
   }
 
   getSupportedChainIds(): Array<bigint> {
-    return [BigInt(this.options.chainId)];
+    return [BigInt(this.options.chain.id)];
   }
 
   async doExecuteRoute(route: PreswapRouteResponseItem): Promise<void> {
@@ -188,11 +186,11 @@ export class UniV2PreswapProvider extends PreswapProvider<UniV2PreswapProviderOp
     toToken: { address: addressOut, decimals: decimalsOut },
   }: PreswapRouteRequest): Promise<Array<PreswapRouteResponseItem>> {
     const tokenIn = new Token(
-      this.options.chainId,
+      this.options.chain.id,
       addressIn === "native" ? this.wethAddress : addressIn,
       decimalsIn
     );
-    const tokenOut = new Token(this.options.chainId, addressOut, decimalsOut);
+    const tokenOut = new Token(this.options.chain.id, addressOut, decimalsOut);
 
     const pair = await this.createPair(tokenIn, tokenOut);
     const route = new Route([pair], tokenIn, tokenOut);
@@ -236,7 +234,7 @@ export class UniV2PreswapProvider extends PreswapProvider<UniV2PreswapProviderOp
         },
         estimatedAt,
         estimatedAt + this.quoteValidityMs,
-        BigInt(this.options.chainId),
+        BigInt(this.options.chain.id),
         {
           address: tokenIn.address,
           decimals: decimalsIn,
