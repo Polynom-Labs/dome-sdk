@@ -8,8 +8,18 @@
   },
   "type": "module",
   "exports": {
-    ".": "./dist/index.js",
-    "./react": "./dist/react/index.js"
+    ".": {
+      "import": {
+        "default": "./dist/core/index.js",
+        "types": "./dist/core/types/index.d.ts"
+      }
+    },
+    "./react": {
+      "import": {
+        "default": "./dist/react/index.js",
+        "types": "./dist/react/types/react/index.d.ts"
+      }
+    }
   },
   "files": [
     "!dist/react/types",

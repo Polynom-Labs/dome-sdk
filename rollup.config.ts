@@ -6,7 +6,7 @@ import { defineConfig } from "rollup";
 export default defineConfig([
   {
     output: {
-      dir: "dist",
+      dir: "dist/core",
       format: "esm",
       sourcemap: true,
     },
@@ -14,7 +14,8 @@ export default defineConfig([
     input: "src/index.ts",
     plugins: [
       typescript({
-        declarationDir: "dist",
+        outDir: "dist/core/types",
+        exclude: ["src/react/**/*.ts", "src/react/**/*.tsx"],
       }),
       commonjs(),
       resolve({
@@ -32,9 +33,12 @@ export default defineConfig([
     input: "src/react/index.ts",
     plugins: [
       typescript({
-        outDir: "dist/react",
-        declarationDir: "dist/react",
-        noEmit: true,
+        include: [
+          "src/react/**/*.ts",
+          "src/react/**/*.tsx",
+          "src/preswap/**/*.ts",
+        ],
+        outDir: "dist/react/types",
       }),
       commonjs(),
       resolve({
