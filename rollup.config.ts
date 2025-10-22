@@ -10,10 +10,31 @@ export default defineConfig([
       format: "esm",
       sourcemap: true,
     },
+    external: ["viem"],
     input: "src/index.ts",
     plugins: [
       typescript({
         declarationDir: "dist/types",
+      }),
+      commonjs(),
+      resolve({
+        preferBuiltins: true,
+      }),
+    ],
+  },
+  {
+    output: {
+      dir: "dist/react",
+      format: "esm",
+      sourcemap: true,
+    },
+    external: ["viem", "react", "wagmi"],
+    input: "src/react/index.ts",
+    plugins: [
+      typescript({
+        outDir: "dist/react",
+        declarationDir: "dist/react/types",
+        noEmit: true,
       }),
       commonjs(),
       resolve({

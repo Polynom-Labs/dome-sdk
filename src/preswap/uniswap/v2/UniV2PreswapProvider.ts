@@ -8,19 +8,17 @@ import {
 import { Pair, Route, Trade } from "@uniswap/v2-sdk";
 import {
   PreswapProvider,
-  PreswapRoute,
+  PreswapProviderOptions,
   PreswapRouteRequest,
   PreswapRouteResponseItem,
 } from "../../types";
+import { parseAbi, isAddress, erc20Abi, parseUnits } from "viem";
 import {
-  parseAbi,
-  PublicClient,
-  WalletClient,
-  getContract,
-  isAddress,
-  erc20Abi,
-  parseUnits,
-} from "viem";
+  waitForTransactionReceipt,
+  readContract,
+  writeContract,
+  getFeeHistory,
+} from "viem/actions";
 import { UniV2PreswapQuote } from "./UniV2PreswapQuote";
 
 const POOL_RAW_ABI = parseAbi([
@@ -34,55 +32,48 @@ const SWAP_ROUTER_RAW_ABI = parseAbi([
 
 const SINGLE_HOP_SWAP_GAS_LIMIT = 127_000n;
 
-interface UniV2PreswapProviderOptions {
+export interface UniV2PreswapProviderOptions extends PreswapProviderOptions {
   chainId: number;
-  readClient: PublicClient;
-  writeClient: WalletClient;
   swapRouterAddress: string;
   quoteValidityMs?: number;
   wethAddress?: string;
-  txConfirmations?: number;
   slippageTolerance?: number;
 }
 
-export class UniV2PreswapProvider implements PreswapProvider {
-  private readonly chainId: number;
-  private readonly readClient: PublicClient;
-  private readonly writeClient: WalletClient;
+export class UniV2PreswapProvider extends PreswapProvider<UniV2PreswapProviderOptions> {
   private readonly quoteValidityMs: number;
   private readonly wethAddress: string;
   private readonly swapRouterAddress: string;
-  private readonly txConfirmations: number;
   private readonly slippageTolerance: number;
 
-  constructor({
-    chainId,
-    readClient,
-    writeClient,
-    quoteValidityMs = 1000 * 60 * 3,
-    wethAddress = WETH9[chainId].address,
-    swapRouterAddress,
-    txConfirmations = 5,
-    slippageTolerance = 50,
-  }: UniV2PreswapProviderOptions) {
-    this.chainId = chainId;
-    this.readClient = readClient;
-    this.writeClient = writeClient;
+  constructor(options: UniV2PreswapProviderOptions) {
+    super(options);
+
+    const {
+      chainId,
+      quoteValidityMs = 1000 * 60 * 3,
+      wethAddress = WETH9[chainId].address,
+      swapRouterAddress,
+      txConfirmations = 5,
+      slippageTolerance = 50,
+    } = options;
     this.quoteValidityMs = quoteValidityMs;
     if (!isAddress(wethAddress)) {
       throw new Error("Invalid WETH address");
     }
+    if (this.options.txConfirmations == null) {
+      this.options.txConfirmations = txConfirmations;
+    }
     this.wethAddress = wethAddress;
     this.swapRouterAddress = swapRouterAddress;
-    this.txConfirmations = txConfirmations;
     this.slippageTolerance = slippageTolerance;
   }
 
   getSupportedChainIds(): Array<bigint> {
-    return [BigInt(this.chainId)];
+    return [BigInt(this.options.chainId)];
   }
 
-  async executeRoute(route: PreswapRouteResponseItem): Promise<void> {
+  async doExecuteRoute(route: PreswapRouteResponseItem): Promise<void> {
     if (!(route instanceof UniV2PreswapQuote)) {
       throw new Error("Invalid route");
     }
@@ -99,14 +90,14 @@ export class UniV2PreswapProvider implements PreswapProvider {
 
     const isTokenInIsWeth =
       fromToken.address.toLowerCase() === this.wethAddress.toLowerCase();
-    const recipient = this.writeClient.account!.address;
+    const recipient = this.options.writeClient!.account!.address;
     const path = [
       fromToken.address as `0x${string}`,
       toToken.address as `0x${string}`,
     ];
 
     if (isTokenInIsWeth) {
-      const tx = await this.writeClient.writeContract({
+      const tx = await writeContract(this.options.writeClient!, {
         address: this.swapRouterAddress as `0x${string}`,
         abi: SWAP_ROUTER_RAW_ABI,
         functionName: "swapETHForExactTokens",
@@ -116,40 +107,40 @@ export class UniV2PreswapProvider implements PreswapProvider {
           recipient,
           BigInt(Math.floor(Date.now() / 1000) + 1800),
         ],
-        chain: this.writeClient.chain,
-        account: this.writeClient.account!,
+        chain: this.options.chain,
+        account: this.options.writeClient!.account!,
         value: amountIn,
       });
-      await this.readClient.waitForTransactionReceipt({
+      await waitForTransactionReceipt(this.options.readClient, {
         hash: tx,
-        confirmations: this.txConfirmations,
+        confirmations: this.options.txConfirmations,
       });
     } else {
-      const allowance = await this.readClient.readContract({
+      const allowance = await readContract(this.options.readClient, {
         address: fromToken.address as `0x${string}`,
         abi: erc20Abi,
         functionName: "allowance",
         args: [
-          this.writeClient.account!.address as `0x${string}`,
+          this.options.writeClient!.account!.address as `0x${string}`,
           this.swapRouterAddress as `0x${string}`,
         ],
       });
 
       if (amountIn > allowance) {
-        const tx = await this.writeClient.writeContract({
+        const tx = await writeContract(this.options.writeClient!, {
           address: fromToken.address as `0x${string}`,
           abi: erc20Abi,
           functionName: "approve",
           args: [this.swapRouterAddress as `0x${string}`, amountIn],
-          chain: this.writeClient.chain,
-          account: this.writeClient.account!,
+          chain: this.options.writeClient!.chain,
+          account: this.options.writeClient!.account!,
         });
-        await this.readClient.waitForTransactionReceipt({
+        await waitForTransactionReceipt(this.options.readClient, {
           hash: tx,
-          confirmations: this.txConfirmations,
+          confirmations: this.options.txConfirmations,
         });
       }
-      const tx = await this.writeClient.writeContract({
+      const tx = await writeContract(this.options.writeClient!, {
         address: this.swapRouterAddress as `0x${string}`,
         abi: SWAP_ROUTER_RAW_ABI,
         functionName: "swapTokensForExactTokens",
@@ -160,12 +151,12 @@ export class UniV2PreswapProvider implements PreswapProvider {
           recipient,
           BigInt(Math.floor(Date.now() / 1000) + 1800),
         ],
-        chain: this.writeClient.chain,
-        account: this.writeClient.account!,
+        chain: this.options.writeClient!.chain,
+        account: this.options.writeClient!.account!,
       });
-      await this.readClient.waitForTransactionReceipt({
+      await waitForTransactionReceipt(this.options.readClient, {
         hash: tx,
-        confirmations: this.txConfirmations,
+        confirmations: this.options.txConfirmations,
       });
     }
   }
@@ -173,13 +164,11 @@ export class UniV2PreswapProvider implements PreswapProvider {
   private async createPair(tokenIn: Token, tokenOut: Token): Promise<Pair> {
     const pairAddress = Pair.getAddress(tokenIn, tokenOut) as `0x${string}`;
 
-    const pairContract = getContract({
+    const reserves = await readContract(this.options.readClient, {
       address: pairAddress,
       abi: POOL_RAW_ABI,
-      client: this.readClient,
+      functionName: "getReserves",
     });
-
-    const reserves = await pairContract.read.getReserves();
     const [reserve0, reserve1] = reserves;
 
     const tokens = [tokenIn, tokenOut];
@@ -193,17 +182,17 @@ export class UniV2PreswapProvider implements PreswapProvider {
     );
   }
 
-  async fetchRoutes({
+  async doFetchRoutes({
     exactAmountOut,
     fromToken: { address: addressIn, decimals: decimalsIn },
     toToken: { address: addressOut, decimals: decimalsOut },
-  }: PreswapRouteRequest): Promise<Array<PreswapRoute>> {
+  }: PreswapRouteRequest): Promise<Array<PreswapRouteResponseItem>> {
     const tokenIn = new Token(
-      this.chainId,
+      this.options.chainId,
       addressIn === "native" ? this.wethAddress : addressIn,
       decimalsIn
     );
-    const tokenOut = new Token(this.chainId, addressOut, decimalsOut);
+    const tokenOut = new Token(this.options.chainId, addressOut, decimalsOut);
 
     const pair = await this.createPair(tokenIn, tokenOut);
     const route = new Route([pair], tokenIn, tokenOut);
@@ -223,7 +212,7 @@ export class UniV2PreswapProvider implements PreswapProvider {
       )
     );
 
-    const history = await this.readClient.getFeeHistory({
+    const history = await getFeeHistory(this.options.readClient, {
       blockCount: 10,
       rewardPercentiles: [50],
       blockTag: "latest",
@@ -247,7 +236,7 @@ export class UniV2PreswapProvider implements PreswapProvider {
         },
         estimatedAt,
         estimatedAt + this.quoteValidityMs,
-        BigInt(this.chainId),
+        BigInt(this.options.chainId),
         {
           address: tokenIn.address,
           decimals: decimalsIn,
