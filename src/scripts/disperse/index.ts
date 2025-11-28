@@ -16,7 +16,10 @@ export function generateDisperseScript({
   tag = DEFAULT_TAG,
   shares,
 }: DisperseArgs): string {
-  const assetFelts = accountIdHexToFelts(assetAccountId);
+  const assetFelts =
+    typeof assetAccountId === "string"
+      ? accountIdHexToFelts(assetAccountId)
+      : assetAccountId;
   const normalizedShares: NormalizedArgs["shares"] = shares.map((share) => {
     return {
       recipient: share.recipient as `0x${string}`,
@@ -30,7 +33,7 @@ export function generateDisperseScript({
   });
 
   let script = "";
-  script += `use.miden::tx
+  script += `use.miden::output_note
 use.miden::contracts::wallets::basic
 
 begin
@@ -42,7 +45,7 @@ begin
 \tpush.2
 \tpush.0
 \tpush.${tag}
-\tcall.tx::create_note
+\tcall.output_note::create
 
 \tpush.${share.asset}
 \tcall.basic::move_asset_to_note dropw

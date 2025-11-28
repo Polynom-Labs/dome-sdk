@@ -1,5 +1,5 @@
 export type DisperseArgs = {
-  assetAccountId: string;
+  assetAccountId: string | [bigint, bigint];
   tag?: bigint;
   shares: Array<{
     recipient: string;
