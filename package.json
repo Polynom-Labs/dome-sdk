@@ -1,6 +1,6 @@
 {
   "name": "@dome-protocol/sdk",
-  "version": "0.3.0",
+  "version": "0.3.1-rc.0",
   "description": "The frontend sdk to operate with dome onchain entities",
   "repository": {
     "type": "git",
